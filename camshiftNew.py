@@ -34,7 +34,7 @@ def select_ROI(event,x,y,flags,param):
         cv2.rectangle(frame,(ix,iy),(jx,jy),(255,0,0),2)
 
 # Grab the reference to the camera
-cap = cv2.VideoCapture(0)#('test.mov') #cv2.VideoCapture(0)
+cap = cv2.VideoCapture('test2.mov') #cv2.VideoCapture(0)
 
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
@@ -121,12 +121,15 @@ while(1):
         # Draw it on image
         
         pts = cv2.boxPoints(ret)
-        #print('x', pts[0][0])
-        #print('y', pts[0][1])
-        cv2.putText(frame, 'x: ' + str(pts[0][0]), (20, 20), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
-        cv2.putText(frame, 'y: ' + str(pts[0][1]), (20, 40), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
         pts = np.int0(pts)
-        cv2.polylines(frame,[pts],True, [255,0,0], 2) #polylines
+        cv2.polylines(frame,[pts],True, [255,0,0], 2)
+        circleX = int(np.floor((pts[0][0]+pts[2][0])/2))
+        circleY = int(np.floor((pts[0][1]+pts[2][1])/2))
+        circleCenter = (circleX, circleY)
+        cv2.rectangle(frame,(10,0),(80,50),(255,255,255), -1)
+        cv2.putText(frame, 'x: ' + str(circleX), (20, 20), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+        cv2.putText(frame, 'y: ' + str(circleY), (20, 40), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+        cv2.circle(frame, circleCenter, 3, (0,0,255), -1) #polylines
         
         #out.write(frame)
 
