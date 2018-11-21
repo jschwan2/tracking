@@ -1,6 +1,9 @@
 # import the necessary packages
 import numpy as np
 import cv2
+import RPi.GPIO as GPIO
+import time
+
 
 # (ix,iy) will be north west corner and
 # (jx,jy) will be south east corner of ROI rectangle
@@ -33,8 +36,27 @@ def select_ROI(event,x,y,flags,param):
         # Draw rectangle using (ix,iy) and (jx,jy)
         cv2.rectangle(frame,(ix,iy),(jx,jy),(255,0,0),2)
 
+def calculateAngle(angle):
+    calc = float(angle) / 10.0 + 2.5#((angle/180.0) + 1.0) * 5.0
+    return calc
+
+#set up servos
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12, GPIO.OUT)
+GPIO.setup(11, GPIO.OUT)
+
+pan = GPIO.PWM(12, 50)
+panNum = 0
+panAngle = calculateAngle(panNum)
+pan.start(panAngle)
+           
+tilt = GPIO.PWM(11, 50)
+tiltNum = 90
+tiltAngle = calculateAngle(tiltNum)
+tilt.start(tiltAngle)
+
 # Grab the reference to the camera
-cap = cv2.VideoCapture('test2.mov') #cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0) #cv2.VideoCapture(0)
 
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
