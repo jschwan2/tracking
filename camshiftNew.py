@@ -46,14 +46,18 @@ GPIO.setup(12, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
 
 pan = GPIO.PWM(12, 50)
-panNum = 0
+panNum = 50
 panAngle = calculateAngle(panNum)
 pan.start(panAngle)
            
 tilt = GPIO.PWM(11, 50)
-tiltNum = 90
+tiltNum = 40
 tiltAngle = calculateAngle(tiltNum)
 tilt.start(tiltAngle)
+time.sleep(1)
+##pan.stop()
+##tilt.stop()
+##GPIO.cleanup()
 
 # Grab the reference to the camera
 cap = cv2.VideoCapture(0) #cv2.VideoCapture(0)
@@ -152,6 +156,26 @@ while(1):
         cv2.putText(frame, 'x: ' + str(circleX), (20, 20), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
         cv2.putText(frame, 'y: ' + str(circleY), (20, 40), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
         cv2.circle(frame, circleCenter, 3, (0,0,255), -1) #polylines
+
+##        if circleY > 350: #go down
+##            tiltNum = tiltNum - 2
+##            tiltAngle = calculateAngle(tiltNum)
+##            tilt.ChangeDutyCycle(tiltAngle)
+##
+##        if circleY < 150: #go down
+##            tiltNum = tiltNum + 2
+##            tiltAngle = calculateAngle(tiltNum)
+##            tilt.ChangeDutyCycle(tiltAngle)
+
+        if circleX > 450: #go right
+            panNum = panNum - 1
+            panAngle = calculateAngle(panNum)
+            pan.ChangeDutyCycle(panAngle)
+        if circleX < 200: #go left
+            panNum = panNum + 1
+            panAngle = calculateAngle(panNum)
+            pan.ChangeDutyCycle(panAngle)
+            
         
         #out.write(frame)
 
@@ -172,6 +196,9 @@ while(1):
 ## Releasing camera
 cap.release()
 #out.release()
+pan.stop()
+## tilt.stop()
+GPIO.cleanup()
 
 ## Destroy all open windows
 cv2.destroyAllWindows()
