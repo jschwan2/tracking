@@ -6,6 +6,16 @@ import cv2
 # (jx,jy) will be south east corner of ROI rectangle
 ix,iy,jx,jy = -1,-1,-1,-1
 
+font = cv2.FONT_HERSHEY_SIMPLEX
+# FONT_HERSHEY_SIMPLEX = 0,
+# FONT_HERSHEY_PLAIN = 1,
+# FONT_HERSHEY_DUPLEX = 2,
+# FONT_HERSHEY_COMPLEX = 3,
+# FONT_HERSHEY_TRIPLEX = 4,
+# FONT_HERSHEY_COMPLEX_SMALL = 5,
+# FONT_HERSHEY_SCRIPT_SIMPLEX = 6,
+# FONT_HERSHEY_SCRIPT_COMPLEX = 7,
+
 # mouse callback function to select ROI in the frame
 def select_ROI(event,x,y,flags,param):
     
@@ -24,12 +34,12 @@ def select_ROI(event,x,y,flags,param):
         cv2.rectangle(frame,(ix,iy),(jx,jy),(255,0,0),2)
 
 # Grab the reference to the camera
-cap = cv2.VideoCapture('test3.mov') #cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)#('test.mov') #cv2.VideoCapture(0)
 
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
-out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+#out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 
 # setup the mouse callback
 cv2.namedWindow('frame',cv2.WINDOW_NORMAL)
@@ -109,11 +119,16 @@ while(1):
         ret, track_window = cv2.CamShift(dst, track_window, term_crit)
 
         # Draw it on image
+        
         pts = cv2.boxPoints(ret)
-        print(pts)
+        #print('x', pts[0][0])
+        #print('y', pts[0][1])
+        cv2.putText(frame, 'x: ' + str(pts[0][0]), (20, 20), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+        cv2.putText(frame, 'y: ' + str(pts[0][1]), (20, 40), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
         pts = np.int0(pts)
-        cv2.polylines(frame,[pts],True, [255,0,0], 2)
-        out.write(frame)
+        cv2.polylines(frame,[pts],True, [255,0,0], 2) #polylines
+        
+        #out.write(frame)
 
     # show the frame 
     cv2.imshow('frame',frame)
@@ -131,7 +146,7 @@ while(1):
 
 ## Releasing camera
 cap.release()
-out.release()
+#out.release()
 
 ## Destroy all open windows
 cv2.destroyAllWindows()
