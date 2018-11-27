@@ -3,7 +3,7 @@ import argparse
 import sys
 import math
 import numpy as np
-import RPi.GPIO as GPIO
+import pigpio
 import time
 
 
@@ -25,10 +25,6 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 # select a region using the mouse
 boxes = []
 current_mouse_position = np.ones(2, dtype=np.int32)
-
-def calculateAngle(angle):
-    calc = float(angle) / 10.0 + 2.5#((angle/180.0) + 1.0) * 5.0
-    return calc
 
 def on_mouse(event, x, y, flags, params):
 
@@ -66,22 +62,25 @@ def nothing(x):
     pass
 
 
-#set up servos
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(12, GPIO.OUT)
-GPIO.setup(11, GPIO.OUT)
+pan = 18
+tilt = 17
 
-pan = GPIO.PWM(12, 50)
-panNum = 50
-panAngle = calculateAngle(panNum)
-pan.start(panAngle)
-           
-tilt = GPIO.PWM(11, 50)
-tiltNum = 40
-tiltAngle = calculateAngle(tiltNum)
-tilt.start(tiltAngle)
-time.sleep(1)
+pi = pigpio.pi()
 
+pi.set_PWM_frequency(pan, 50)
+pi.set_PWM_range(pan, 20000)
+
+pi.set_PWM_frequency(tilt, 50)
+pi.set_PWM_range(tilt, 20000)
+
+increment = 10
+panAngle = 1500
+tiltAngle = 1500
+SLEEP= 0.01
+
+pi.set_servo_pulsewidth(pan, panAngle)
+pi.set_servo_pulsewidth(tilt, tiltAngle)
+time.sleep(1.01)
 
 cap = cv2.VideoCapture(0)
 frame_width = int(cap.get(3))
@@ -227,23 +226,24 @@ if True:
                 
                 
                 if centerXY[1] > 350: #go down
-                    tiltNum = tiltNum + 1
-                    tiltAngle = calculateAngle(tiltNum)
-                    tilt.ChangeDutyCycle(tiltAngle)
+                    tiltAngle+=increment
+                    pi.set_servo_pulsewidth(tilt, tiltAngle)
+                    time.sleep(0.01)
 
                 if centerXY[1] < 150: #go down
-                    tiltNum = tiltNum - 1
-                    tiltAngle = calculateAngle(tiltNum)
-                    tilt.ChangeDutyCycle(tiltAngle)
+                    tiltAngle-=increment
+                    pi.set_servo_pulsewidth(tilt, tiltAngle)
+                    time.sleep(0.01)
 
                 if centerXY[0] > 450: #go right
-                    panNum = panNum - 1
-                    panAngle = calculateAngle(panNum)
-                    pan.ChangeDutyCycle(panAngle)
+                    panAngle-=increment
+                    pi.set_servo_pulsewidth(pan, panAngle)
+                    time.sleep(0.01)
                 if centerXY[0] < 200: #go left
-                    panNum = panNum + 1
-                    panAngle = calculateAngle(panNum)
-                    pan.ChangeDutyCycle(panAngle)
+                    panAngle+=increment
+                    pi.set_servo_pulsewidth(pan, panAngle)
+                    time.sleep(0.01)
+    
                 
                 
                 # use to correct kalman filter
