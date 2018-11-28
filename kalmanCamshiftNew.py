@@ -52,16 +52,18 @@ def centerJ(x, y, x1, y1):
     centerY = int(np.floor((y+y1)/2))
     return(centerX, centerY)
 
-# this function is called as a call-back everytime the trackbar is moved
-# (here we just do nothing)
+def pointToPointDistance(x1, y1, x2, y2):
+    x = x2-x1
+    y = y2-y1
+    x = x*x
+    y = y*y
+    sum = x + y
+    return math.sqrt(sum)
 
-def nothing(x):
-    pass
-
-cap = cv2.VideoCapture('test2.mov')
+cap = cv2.VideoCapture(0)
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
-out = cv2.VideoWriter('test.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+#out = cv2.VideoWriter('test.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 
 windowName = "Kalman Object Tracking" # window name
 windowNameSelection = "initial selected region"
@@ -190,7 +192,7 @@ if True:
                 # draw observation on image - in BLUE
                 x,y,w,h = track_window
                 frame = cv2.rectangle(frame, (x,y), (x+w,y+h), (255,0,0),2)
-                cv2.rectangle(frame,(10,0),(90,90),(255,255,255), -1)
+                cv2.rectangle(frame,(10,0),(90,110),(255,255,255), -1)
                 # extract centre of this observation as points
 
                 pts = cv2.boxPoints(ret)
@@ -213,7 +215,11 @@ if True:
                 cv2.putText(frame, 'Px: ' + str(centerXYJ[0]), (20, 60), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
                 cv2.putText(frame, 'Py: ' + str(centerXYJ[1]), (20, 80), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
-                out.write(frame)
+                distanceBetweenCenters = int(np.floor(pointToPointDistance(centerXY[0], centerXY[1], centerXYJ[0], centerXYJ[1])))
+                cv2.putText(frame, 'DBC: ' + str(distanceBetweenCenters), (20, 100), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+
+
+                #out.write(frame)
 
             else:
 
@@ -240,7 +246,7 @@ if True:
 
         # e.g. if user presses "x" then exit  / press "f" for fullscreen display
 
-        if (key == ord('x')):
+        if (key == ord('q')):
             keep_processing = False
         elif (key == ord('f')):
             cv2.setWindowProperty(windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -250,7 +256,7 @@ if True:
             else:
                 pause= True
     # close all windows
-    out.release()
+    #out.release()
     cv2.destroyAllWindows()
 
 else:
