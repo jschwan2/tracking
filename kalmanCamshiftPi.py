@@ -61,6 +61,14 @@ def centerJ(x, y, x1, y1):
 def nothing(x):
     pass
 
+def checkNum(num):
+    if num > 2500:
+        num = 2500
+    if num < 500:
+        num =400
+    return num
+
+
 
 pan = 18
 tilt = 17
@@ -73,7 +81,7 @@ pi.set_PWM_range(pan, 20000)
 pi.set_PWM_frequency(tilt, 50)
 pi.set_PWM_range(tilt, 20000)
 
-increment = 10
+increment = 20
 panAngle = 1500
 tiltAngle = 1500
 SLEEP= 0.01
@@ -227,20 +235,28 @@ if True:
                 
                 if centerXY[1] > 350: #go down
                     tiltAngle+=increment
+                    tiltAngle = checkNum(tiltAngle)
+                    print(tiltAngle)
                     pi.set_servo_pulsewidth(tilt, tiltAngle)
                     time.sleep(0.01)
 
                 if centerXY[1] < 150: #go down
                     tiltAngle-=increment
+                    tiltAngle = checkNum(tiltAngle)
+                    print(tiltAngle)
                     pi.set_servo_pulsewidth(tilt, tiltAngle)
                     time.sleep(0.01)
 
                 if centerXY[0] > 450: #go right
                     panAngle-=increment
+                    panAngle = checkNum(panAngle)
+                    print(panAngle)
                     pi.set_servo_pulsewidth(pan, panAngle)
                     time.sleep(0.01)
                 if centerXY[0] < 200: #go left
                     panAngle+=increment
+                    panAngle = checkNum(panAngle)
+                    print(panAngle)
                     pi.set_servo_pulsewidth(pan, panAngle)
                     time.sleep(0.01)
     
