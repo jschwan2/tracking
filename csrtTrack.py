@@ -48,16 +48,7 @@ else:
 # to track
 initBB = None
 
-
-# if a video path was not supplied, grab the reference to the web cam
-if not args.get("video", False):
-	print("[INFO] starting video stream...")
-	vs = VideoStream(src=0).start()
-	time.sleep(1.0)
- 
-# otherwise, grab a reference to the video file
-else:
-	vs = cv2.VideoCapture(0)#(args["video"])
+vs = VideoStream(src=0).start()
  
 # initialize the FPS throughput estimator
 fps = None
@@ -109,7 +100,7 @@ while True:
 		for (i, (k, v)) in enumerate(info):
 			text = "{}: {}".format(k, v)
 			cv2.putText(frame, text, (1, H - ((i * 20) + 10)),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.2, (0, 0, 255), 1)
+				cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
 
 
 
